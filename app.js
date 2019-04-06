@@ -121,6 +121,28 @@ app.post('/api/tickets/', (req, res) => {
     iva = subtotal*.16
     total = subtotal + iva
 */
+app.patch('/api/tickets/caja/:id/', (req, res) => {
+    Ticket.findById(req.params.id)
+          .populate('articulos')
+          .then( ticket => {
+            const precios = ticket.articulos.map( articulo => articulo.precio);
+            const subtotal = precios.reduce( (total, num) => total + num);
+            const iva = (subtotal * 0.16);
+            const total = subtotal + iva;
+
+            console.log(precios, subtotal, iva, total);
+
+            Ticket.findOneAndUpdate({_id: ticket._id}, {subtotal, iva, total}, {new: true})
+                  .populate('articulos')
+                  .then( modifiedTicket => {
+                    res.status(200).send(modifiedTicket);
+                  });
+          })
+          .catch( err => {
+            res.send(err);
+          });
+});
+
 
 app.listen( PORT, ()=>{
     console.log(`Server running on port ${PORT}`);
