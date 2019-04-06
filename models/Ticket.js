@@ -26,7 +26,8 @@ const TicketSchema = new mongoose.Schema({
     },
     articulos: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Articulo'
+        ref: 'Articulo',
+        required: true,
     }],
 });
 
