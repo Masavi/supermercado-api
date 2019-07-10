@@ -39,13 +39,30 @@ app.get('/api/articulos/', (req, res) => {
             });
 });
 
+app.get('/api/articulos/:id', (req, res) => {
+    Articulo.findById(req.params.id)
+            .exec()
+            .then( articulo => {
+                res.status(200).send({
+                    message: "item received succesfully",
+                    items: articulo,
+                });
+            })
+            .catch( err => {
+                res.send({
+                    message: "there was an error with this query",
+                    db_error: err,
+                });
+            });
+});
+
 app.post('/api/articulos/', (req, res) => {
     const newItem = req.body;
 
     new Articulo(newItem)
         .save()
         .then( item => {
-            res.send({
+            res.status(201).send({
                 message: "item created succesfully",
                 item,
             });
@@ -56,6 +73,23 @@ app.post('/api/articulos/', (req, res) => {
                 err,
             })
         });
+});
+
+app.delete('/api/articulos/:id', (req, res) => {
+    Articulo.findByIdAndDelete(req.params.id)
+            .exec()
+            .then( articulo => {
+                res.status(204).send({
+                    message: "item deleted succesfully",
+                    items: articulo,
+                });
+            })
+            .catch( err => {
+                res.send({
+                    message: "there was an error with this query",
+                    db_error: err,
+                });
+            });
 });
 
 // Ticket

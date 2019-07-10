@@ -11,6 +11,9 @@ const mongoose = require('mongoose');
        elementales CRUD sobre artículos y ticket.
 */
 
+// const Schema = mongoose.Schema;
+// const ObjectId = mongoose.Types.ObjectId;
+
 const TicketSchema = new mongoose.Schema({
     subtotal: {
         type: Number,

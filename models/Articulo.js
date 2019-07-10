@@ -11,9 +11,6 @@ const mongoose = require('mongoose');
 
 */
 
-// Schemas
-const ObjectId = mongoose.Schema.Types.ObjectId;
-
 const ArticuloSchema = new mongoose.Schema({
     nombre: {
         type: String,
