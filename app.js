@@ -24,7 +24,6 @@ app.get('/', (req, res) => {
 // Articulo
 app.get('/api/articulos/', (req, res) => {
     Articulo.find()
-            .exec()
             .then( articulos => {
                 res.status(200).send({
                     message: "items list received succesfully",
@@ -39,13 +38,12 @@ app.get('/api/articulos/', (req, res) => {
             });
 });
 
-app.get('/api/articulos/:id', (req, res) => {
-    Articulo.findById(req.params.id)
-            .exec()
+app.get('/api/articulos/:identificador', (req, res) => {
+    Articulo.findById(req.params.identificador)
             .then( articulo => {
                 res.status(200).send({
                     message: "item received succesfully",
-                    items: articulo,
+                    item: articulo,
                 });
             })
             .catch( err => {
@@ -56,19 +54,22 @@ app.get('/api/articulos/:id', (req, res) => {
             });
 });
 
+// 1) Definir el endpoint para crear un artículo
 app.post('/api/articulos/', (req, res) => {
+    // 2) Obtener el body que me manda el cliente en la petición
     const newItem = req.body;
 
+    // 3) Crear el documento en la base de datos
     new Articulo(newItem)
         .save()
-        .then( item => {
+        .then( item => { // 4.1) Respondo al cliente con respuesta de BD exitosa
             res.status(201).send({
                 message: "item created succesfully",
                 item,
             });
         })
         .catch( err => {
-            res.send({
+            res.status(400).send({ // 4.2) Respondo al cliente con respuesta de BD fallida
                 message: "there was an errror creating the item",
                 err,
             })
@@ -77,7 +78,6 @@ app.post('/api/articulos/', (req, res) => {
 
 app.delete('/api/articulos/:id', (req, res) => {
     Articulo.findByIdAndDelete(req.params.id)
-            .exec()
             .then( articulo => {
                 res.status(204).send({
                     message: "item deleted succesfully",
@@ -130,7 +130,6 @@ app.get('/api/tickets/:id/', (req, res) => {
 
 app.post('/api/tickets/', (req, res) => {
     if (req.body.articulos){
-        console.log(req.body.articulos.length);
         new Ticket(req.body)
             .save()
             .then( ticket => {
@@ -160,12 +159,17 @@ app.patch('/api/tickets/caja/:id/', (req, res) => {
           .populate('articulos')
           .then( ticket => {
             const precios = ticket.articulos.map( articulo => articulo.precio);
-            const subtotal = precios.reduce( (total, num) => total + num);
+            const subtotal = precios.reduce( (total, precio) => total + precio);
             const iva = (subtotal * 0.16);
             const total = subtotal + iva;
 
             console.log(precios, subtotal, iva, total);
-
+            // Ticket.findByIdAndUpdate(ticket._id)
+            // const json = {
+            //     subtotal: subtotal,
+            //     iva: iva,
+            //     total: total,
+            // }
             Ticket.findOneAndUpdate({_id: ticket._id}, {subtotal, iva, total}, {new: true})
                   .populate('articulos')
                   .then( modifiedTicket => {
@@ -173,7 +177,7 @@ app.patch('/api/tickets/caja/:id/', (req, res) => {
                   });
           })
           .catch( err => {
-            res.send(err);
+            res.status(400).send(err);
           });
 });
 
