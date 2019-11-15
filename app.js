@@ -167,12 +167,7 @@ app.patch('/api/tickets/caja/:id/', (req, res) => {
             const total = subtotal + iva;
 
             console.log(precios, subtotal, iva, total);
-            // Ticket.findByIdAndUpdate(ticket._id)
-            // const json = {
-            //     subtotal: subtotal,
-            //     iva: iva,
-            //     total: total,
-            // }
+            
             Ticket.findOneAndUpdate({_id: ticket._id}, {subtotal, iva, total}, {new: true})
                   .populate('articulos')
                   .then( modifiedTicket => {
