@@ -42,4 +42,21 @@ router.delete('/tickets/:id', (req, res) => {
     .catch(err => res.status(404).json(err));
 });
 
+// Calcular total, iva y subtotal
+router.get('/tickets/:id/pagar', async (req, res) => {
+  const ticket = await Ticket.findById(req.params.id).populate('articulos');
+  const { articulos } = ticket;
+  let subtotal = 0;
+  articulos.forEach(articulo => {
+    subtotal += articulo.precio;
+  });
+  const iva = (subtotal * 0.16);
+  const total = subtotal + iva;
+  console.log('🚀', subtotal, iva, total);
+  Ticket.findByIdAndUpdate(req.params.id, { subtotal, iva, total }, { new: true })
+    .populate('articulos')
+    .then( ticketActualizado => res.status(200).json(ticketActualizado) )
+    .catch( err => res.status(400).json({ err }) );
+});
+
 module.exports = router;
