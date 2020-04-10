@@ -24,6 +24,8 @@ const ArticuloSchema = new mongoose.Schema({
         type: Number,
         default: 50,
     }
+},{
+  timestamps: true,
 });
 
 const Articulo = mongoose.model('Articulo', ArticuloSchema);
