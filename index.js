@@ -46,6 +46,45 @@ app.delete('/api/v1/articulos/:id', (req, res) => {
     .catch(err => res.status(404).json(err));
 });
 
+const Ticket = require('./models/Ticket');
+
 // CRUD Tickets
+app.post('/api/v1/tickets', (req, res) => {
+  if (!req.body.articulos || req.body.articulos.length === 0) {
+    res.status(400).json({ mensaje: "Debes incluir al menos un articulo" })
+  }
+  Ticket.create(req.body)
+    .then(ticket => res.status(201).json(ticket))
+    .catch(err => res.status(400).json(err));
+});
+
+app.get('/api/v1/tickets', (req, res) => {
+  Ticket.find()
+    .populate('articulos')
+    .then(tickets => {
+      if (tickets.length === 0) res.status(200).json({ mensaje: 'No hay tickets' });
+      res.status(200).json(tickets);
+    })
+    .catch(err => res.status(400).json(err));
+});
+
+app.get('/api/v1/tickets/:id', (req, res) => {
+  Ticket.findById(req.params.id)
+    .populate('articulos')
+    .then(ticket => res.status(200).json(ticket))
+    .catch(err => res.status(404).json(err));
+});
+
+app.patch('/api/v1/tickets/:id', (req, res) => {
+  Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then(ticket => res.status(200).json(ticket))
+    .catch(err => res.status(404).json(err));
+});
+
+app.delete('/api/v1/tickets/:id', (req, res) => {
+  Ticket.findByIdAndDelete(req.params.id)
+    .then(() => res.status(204).json())
+    .catch(err => res.status(404).json(err));
+});
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
