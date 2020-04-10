@@ -10,8 +10,6 @@ app.get('/', (req, res) => {
   res.send('Hola Mundo');
 });
 
-app.use('/api/v1');
-app.use(require('./router/TicketRoutes'));
-app.use(require('./router/ArticuloRoutes'));
+app.use('/api/v1', require('./router'));
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
